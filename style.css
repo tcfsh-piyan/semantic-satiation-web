@@ -1,0 +1,176 @@
+:root { 
+    --bg-color: #222222; 
+    --text-main: #ffffff; 
+    --text-dim: #999999; 
+    --accent: #3498db; 
+    --success: #2ecc71; 
+    --rank-gold: #f1c40f; 
+}
+
+body { 
+    background-color: var(--bg-color); 
+    color: var(--text-main); 
+    font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; 
+    margin: 0; 
+    overflow: hidden; 
+    touch-action: manipulation; 
+    user-select: none; 
+    -webkit-user-select: none; 
+}
+
+#jspsych-target { 
+    height: 100vh; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+.trial-box { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    height: 45vh; 
+    justify-content: center; 
+    width: 100%; 
+}
+
+.cue-label { 
+    font-size: 2rem; 
+    color: var(--text-dim); 
+    margin-bottom: 50px; 
+    font-weight: 300; 
+    letter-spacing: 2px; 
+}
+
+.target-label { 
+    font-size: 4.5rem; 
+    font-weight: bold; 
+    min-height: 1.2em; 
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5); 
+}
+
+.control-panel { 
+    position: fixed; 
+    bottom: 40px; 
+    left: 0; 
+    right: 0; 
+    width: 100%; 
+    display: flex; 
+    justify-content: center; 
+    gap: 30px; 
+    padding: 0 20px; 
+    box-sizing: border-box; 
+    z-index: 10;
+}
+
+.mobile-btn { 
+    display: none; 
+    width: 40%; 
+    max-width: 180px; 
+    padding: 20px 0; 
+    font-size: 1.8rem; 
+    font-weight: bold; 
+    border-radius: 15px; 
+    border: none; 
+    color: white; 
+    box-shadow: 0 6px 12px rgba(0,0,0,0.4); 
+    cursor: pointer; 
+    transition: transform 0.1s; 
+}
+
+.mobile-btn:active { 
+    transform: scale(0.95); 
+}
+
+.btn-f { background-color: var(--success); }
+.btn-j { background-color: #e74c3c; }
+
+@media (pointer: coarse) { 
+    .mobile-btn { display: block; } 
+}
+
+.info-container { 
+    text-align: center; 
+    max-width: 90%; 
+    line-height: 1.6; 
+}
+
+.score-board { 
+    background: rgba(255, 255, 255, 0.08); 
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    border-radius: 20px; 
+    padding: 30px; 
+    margin: 20px auto; 
+    max-width: 400px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+}
+
+.stat-row { 
+    display: flex; 
+    justify-content: space-between; 
+    margin-bottom: 15px; 
+    border-bottom: 1px solid rgba(255,255,255,0.1); 
+    padding-bottom: 10px; 
+}
+
+.stat-label { 
+    font-size: 1.2rem; 
+    color: var(--text-dim); 
+}
+
+.stat-value { 
+    font-size: 1.5rem; 
+    color: var(--accent); 
+    font-weight: bold; 
+}
+
+.final-rank { 
+    font-size: 3rem; 
+    color: var(--rank-gold); 
+    font-weight: bold; 
+    margin: 20px 0; 
+    text-shadow: 0 0 20px rgba(241, 196, 15, 0.4); 
+}
+
+.rank-title { 
+    font-size: 1.5rem; 
+    color: #fff; 
+    margin-bottom: 10px; 
+}
+
+input[type="text"] {
+    padding: 10px; 
+    font-size: 1.2rem; 
+    border-radius: 5px; 
+    border: 1px solid #ccc;
+    margin-top: 10px; 
+    text-align: center; 
+    width: 80%; 
+    max-width: 300px;
+}
+
+.jspsych-btn {
+    background-color: var(--accent); 
+    border: none; 
+    padding: 12px 24px;
+    font-size: 1.2rem; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    color: white; 
+    margin-top: 20px;
+}
+
+#loading-overlay {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: var(--bg-color); 
+    color: white; 
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    z-index: 9999; 
+    font-size: 1.5rem;
+}
