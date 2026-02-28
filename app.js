@@ -77,21 +77,21 @@ async function fetchFirebaseInBackground() {
     let savedCategories = experimentStatus.categories || [];
     let isDataValid = savedCategories.every(c => allCategories.includes(c));
 
-    if (experimentStatus.isPairComplete === false && isDataValid && savedCategories.length === 6) {
+    if (experimentStatus.isPairComplete === false && isDataValid && savedCategories.length === 5) {
       // 情境 A：上一組做一半，且主題資料都合法，就沿用並切換高低相關
       myCategories = savedCategories;
       myCorrelation = experimentStatus.correlation === "high" ? "low" : "high";
     } else {
       // 情境 B：全新開始，或者是「遇到舊的資料導致衝突」，就一律重新抽籤！
       console.log("啟動新回合或排除舊資料衝突");
-      myCategories = shuffle([...allCategories]).slice(0, 6);
+      myCategories = shuffle([...allCategories]).slice(0, 5);
       myCorrelation = Math.random() > 0.5 ? "high" : "low";
     }
     
     isFirebaseReady = true;
   } catch (error) {
     console.error("Firebase 連線失敗，啟動備用條件:", error);
-    myCategories = shuffle([...allCategories]).slice(0, 6);
+    myCategories = shuffle([...allCategories]).slice(0, 5);
     myCorrelation = Math.random() > 0.5 ? "high" : "low";
     isFirebaseReady = true;
   }
@@ -199,7 +199,7 @@ timeline.push({
           const acc = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
           const rt = Math.round(data.select('rt').mean()) || 0;
           return `
-            <div class="info-container"><h2>階段 ${bIdx+1} / 6 完成</h2>
+            <div class="info-container"><h2>階段 ${bIdx+1} / 5 完成</h2>
             <div class="score-board"><div class="stat-row"><span class="stat-label">正確率</span><span class="stat-value">${acc}%</span></div>
             <div class="stat-row"><span class="stat-label">平均速度</span><span class="stat-value">${rt} ms</span></div></div>
             <p>下一關載入中...</p></div>`;
@@ -240,7 +240,7 @@ timeline.push({
         const finalData = jsPsych.data.get().filter({phase: 'test'}).values();
         const statusText = document.getElementById('upload-status');
         
-        if (finalData.length === 120) { 
+        if (finalData.length === 100) { 
           try {
             statusText.innerText = "📡 數據上傳與狀態更新中...";
             statusText.style.color = "#3498db";
@@ -250,7 +250,7 @@ timeline.push({
               trialsData: finalData,
               completionTime: new Date().toLocaleString("zh-TW"),
               totalTrials: finalData.length,
-              accuracy: Math.round((jsPsych.data.get().filter({phase: 'test', correct: true}).count() / 120) * 100),
+              accuracy: Math.round((jsPsych.data.get().filter({phase: 'test', correct: true}).count() / 100) * 100),
               device: /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
             });
 
@@ -276,3 +276,4 @@ timeline.push({
 });
 
 jsPsych.run(timeline);
+
