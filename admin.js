@@ -36,7 +36,7 @@ async function loadResults() {
                 <td>${data.subjectId || "未知受試者"}</td>
                 <td>${data.completionTime || "無紀錄"}</td>
                 <td><span class="badge bg-danger text-white rounded-pill">${data.device || "mobile"}</span></td>
-                <td>${data.totalTrials || 120}</td>
+                <td>${data.totalTrials || 100}</td>
                 <td>${data.accuracy || "0"}%</td>
                 <td>
                     <button class="btn btn-sm btn-success download-btn" data-id="${docId}">Excel</button>
@@ -125,3 +125,4 @@ document.getElementById("refreshBtn").addEventListener("click", loadResults);
 
 // 網頁開啟時，自動先載入一次資料
 loadResults();
+
