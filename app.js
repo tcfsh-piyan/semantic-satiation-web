@@ -13,7 +13,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- 完整 11 主題詞庫定義 ---
+// --- 完整 11 主題詞庫定義 (已替換為"器官") ---
 const wordBank = {
   "器官": { high: ["心臟", "小腸", "腎臟", "肝臟", "皮膚"], low: ["腦幹", "肺臟", "胰臟", "子宮", "膀胱"] },
   "文具": { high: ["自動筆", "鉛筆盒", "鉛筆", "原子筆", "橡皮擦"], low: ["膠水", "剪刀", "粉筆", "美工刀", "量角器"] },
@@ -61,7 +61,7 @@ function generateBlockTrials(coreCategory, correlationType) {
 }
 
 // ===============================================
-// 1. 在背景非同步抓取 Firebase (不阻擋畫面載入)
+// 1. 在背景非同步抓取 Firebase (加了防呆機制)
 // ===============================================
 async function fetchFirebaseInBackground() {
   try {
@@ -73,23 +73,30 @@ async function fetchFirebaseInBackground() {
       experimentStatus = { isPairComplete: true };
     }
 
-    if (experimentStatus.isPairComplete) {
+    // 🛡️ 新增防呆檢查：確認 Firebase 存的舊主題，現在的詞庫裡到底還有沒有
+    let savedCategories = experimentStatus.categories || [];
+    let isDataValid = savedCategories.every(c => allCategories.includes(c));
+
+    if (experimentStatus.isPairComplete === false && isDataValid && savedCategories.length === 6) {
+      // 情境 A：上一組做一半，且主題資料都合法，就沿用並切換高低相關
+      myCategories = savedCategories;
+      myCorrelation = experimentStatus.correlation === "high" ? "low" : "high";
+    } else {
+      // 情境 B：全新開始，或者是「遇到舊的資料導致衝突」，就一律重新抽籤！
+      console.log("啟動新回合或排除舊資料衝突");
       myCategories = shuffle([...allCategories]).slice(0, 6);
       myCorrelation = Math.random() > 0.5 ? "high" : "low";
-    } else {
-      myCategories = experimentStatus.categories;
-      myCorrelation = experimentStatus.correlation === "high" ? "low" : "high";
     }
+    
     isFirebaseReady = true;
   } catch (error) {
     console.error("Firebase 連線失敗，啟動備用條件:", error);
-    // 如果本地端測試連不上，就直接給隨機條件，避免卡死
     myCategories = shuffle([...allCategories]).slice(0, 6);
     myCorrelation = Math.random() > 0.5 ? "high" : "low";
     isFirebaseReady = true;
   }
 }
-fetchFirebaseInBackground(); // 立刻執行，但不等待
+fetchFirebaseInBackground();
 
 // ===============================================
 // 2. 立刻啟動 jsPsych 介面 (直接進入名字畫面)
@@ -131,7 +138,6 @@ timeline.push({
   choices: [" "],
   on_load: () => { 
     document.getElementById('start').onclick = () => {
-      // 確保使用者按開始時，Firebase 已經準備好 (通常在輸入名字時早就準備好了)
       if(!isFirebaseReady) {
         document.getElementById('start').innerText = "載入設定中...";
         let waitInterval = setInterval(() => {
@@ -146,7 +152,6 @@ timeline.push({
     };
   },
   on_finish: () => {
-    // 說明頁結束後，動態生成剩下的 6 個 Block 和最終上傳畫面
     let dynamicTimeline = [];
 
     // 產生 6 個 Block
@@ -202,7 +207,7 @@ timeline.push({
       });
     });
 
-    // 實驗結束與資料上傳 (防呆機制)
+    // 實驗結束與資料上傳
     dynamicTimeline.push({
       type: jsPsychHtmlKeyboardResponse,
       choices: "NO_KEYS",
@@ -266,11 +271,8 @@ timeline.push({
       }
     });
 
-    // 將後續題目正式加入 jsPsych
     jsPsych.addNodeToEndOfTimeline({ timeline: dynamicTimeline });
   }
 });
-
-// 開始執行畫面！
 
 jsPsych.run(timeline);
